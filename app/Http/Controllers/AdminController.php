@@ -83,9 +83,9 @@ class AdminController extends Controller
 
             $user = User::where('email_hash', hash('sha256', $googleUser->getEmail()))->first();
 
-            if (! $user) {
+            if (!$user) {
 
-                return redirect()->route('admin')->with('error', 'Invalid credentials');
+                return redirect()->route('admin')->with('error', 'Account Unauthorized. Please contact the system administrator.');
             }
 
             $user->update([
@@ -96,7 +96,7 @@ class AdminController extends Controller
 
             Auth::login($user);
 
-            return redirect()->route('dashboard')->with('success', 'Welcome '.$user->name);
+            return redirect()->route('dashboard')->with('success', 'Welcome ' . $user->name);
 
         } catch (Exception $e) {
 

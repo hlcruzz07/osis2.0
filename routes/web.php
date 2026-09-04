@@ -5,6 +5,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
 use App\Models\SocioEconomicCategory;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/form', [StudentController::class, 'form'])->name('studentForm');
@@ -17,7 +18,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/check', function () {
-    dd(SocioEconomicCategory::all()->toArray());
+    dd(User::all()->toArray());
 });
 
 Route::get('/auth/google/redirect', [AdminController::class, 'redirect'])->name('googleRedirect');
@@ -41,4 +42,4 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     });
 });
 
-require __DIR__.'/api.php';
+require __DIR__ . '/api.php';
