@@ -21,10 +21,10 @@ class EntityDropdownSeeder extends Seeder
             'SUFFIX' => [
                 'JR.',
                 'SR.',
-                'II',
-                'III',
-                'IV',
-                'V',
+                'II.',
+                'III.',
+                'IV.',
+                'V.',
                 'NONE',
             ],
             'GENDER' => [
