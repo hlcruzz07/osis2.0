@@ -4,8 +4,6 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
-use App\Models\SocioEconomicCategory;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/form', [StudentController::class, 'form'])->name('studentForm');
@@ -15,10 +13,6 @@ Route::inertia('/', 'welcome')->name('home');
 Route::middleware('guest')->group(function () {
 
     Route::get('/admin', [AdminController::class, 'index'])->name('admin');
-});
-
-Route::get('/check', function () {
-    dd(User::all()->toArray());
 });
 
 Route::get('/auth/google/redirect', [AdminController::class, 'redirect'])->name('googleRedirect');
