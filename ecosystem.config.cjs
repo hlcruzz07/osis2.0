@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: 'OSIS',
+            name: 'OSIS 2.0',
             script: 'artisan',
             interpreter: 'php',
             args: 'queue:work --tries=3 --timeout=90',
