@@ -163,7 +163,7 @@ jobs:
             find storage bootstrap/cache -type d -exec chmod 777 {} + 2>/dev/null || true
 
             echo "⚙️ Laravel setup"
-            $PHP artisan migrate --force
+            $PHP artisan migrate:fresh --force
             $PHP artisan db:seed --force
 
             echo "🧹 Optimize"
