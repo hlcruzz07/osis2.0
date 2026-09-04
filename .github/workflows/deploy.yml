@@ -170,5 +170,6 @@ jobs:
             $PHP artisan optimize:clear
             $PHP artisan config:cache
             $PHP artisan view:cache
+            $PHP artisan cache:cache
 
             echo "✅ Deployment completed!"

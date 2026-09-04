@@ -14,15 +14,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::updateOrCreate([
-            'email_hash' => HashService::make('haroldlyndon.cruz@chmsu.edu.ph'),
-        ], [
-            'email' => 'haroldlyndon.cruz@chmsu.edu.ph',
+        $email = 'haroldlyndon.cruz@chmsu.edu.ph';
+        $emailHash = HashService::make($email);
+        $user = User::where('email_hash', $emailHash)->first()
+            ?? User::where('email_hash', hash('sha256', $email))->first();
+
+        if (!$user) {
+            $user = new User;
+        }
+
+        $user->fill([
+            'email_hash' => $emailHash,
+            'email' => $email,
             'avatar' => null,
             'name' => 'Harold Lyndon Cruz',
             'name_hash' => HashService::make('Harold Lyndon Cruz'),
             'email_verified_at' => Carbon::now(),
-        ]);
+        ])->save();
 
         $user->assignRole('super_administrator');
 
