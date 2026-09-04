@@ -168,8 +168,8 @@ jobs:
 
             echo "🧹 Optimize"
             $PHP artisan optimize:clear
-            $PHP artisan config:cache
-            $PHP artisan view:cache
-            $PHP artisan cache:cache
+            $PHP artisan config:clear
+            $PHP artisan view:clear
+            $PHP artisan cache:clear
 
             echo "✅ Deployment completed!"
