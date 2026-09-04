@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Student;
-use App\Services\GoogleDriveService;
 use App\Services\HashService;
 use Illuminate\Http\Request;
 
 class StudentApiController extends Controller
 {
-    public function __construct(protected Student $model, protected GoogleDriveService $googleDriveService) {}
+    public function __construct(protected Student $model)
+    {
+    }
 
     public function paginate(Request $request)
     {
@@ -37,7 +38,7 @@ class StudentApiController extends Controller
             'address',
         ]);
 
-        if (! empty($filters['search'])) {
+        if (!empty($filters['search'])) {
             $search = $filters['search'];
 
             $query->where(function ($q) use ($search) {
@@ -51,35 +52,35 @@ class StudentApiController extends Controller
             });
         }
 
-        if (! empty($filters['type'])) {
+        if (!empty($filters['type'])) {
             $query->where(
                 'entry_status_hash',
                 HashService::make($filters['type'])
             );
         }
 
-        if (! empty($filters['campus'])) {
+        if (!empty($filters['campus'])) {
             $query->where(
                 'campus_hash',
                 HashService::make($filters['campus'])
             );
         }
 
-        if (! empty($filters['college'])) {
+        if (!empty($filters['college'])) {
             $query->where(
                 'college_hash',
                 HashService::make($filters['college'])
             );
         }
 
-        if (! empty($filters['course'])) {
+        if (!empty($filters['course'])) {
             $query->where(
                 'program_applied_hash',
                 HashService::make($filters['course'])
             );
         }
 
-        if (! empty($filters['major'])) {
+        if (!empty($filters['major'])) {
             $query->where(
                 'major_hash',
                 HashService::make($filters['major'])
@@ -93,7 +94,7 @@ class StudentApiController extends Controller
             );
         }
 
-        if (! empty($filters['date_from']) && ! empty($filters['date_to'])) {
+        if (!empty($filters['date_from']) && !empty($filters['date_to'])) {
             if ($filters['date_from'] === $filters['date_to']) {
                 $query->whereDate('created_at', '=', $filters['date_from']);
             } else {
