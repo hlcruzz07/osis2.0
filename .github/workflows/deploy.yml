@@ -171,5 +171,6 @@ jobs:
             $PHP artisan view:clear
             $PHP artisan cache:clear
             $PHP artisan route:clear
+            $PHP artisan dropdowns:refresh
 
             echo "✅ Deployment completed!"
