@@ -6,6 +6,7 @@ use App\Enums\StudentEconomicStatus;
 use App\Models\Student;
 use App\Models\StudentSocioEconomicProfile;
 use App\Models\User;
+use App\Services\HashService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -77,11 +78,11 @@ class AdminController extends Controller
 
     public function callback()
     {
-        $googleUser = Socialite::driver('google')->user();
-
         try {
+            $googleUser = Socialite::driver('google')->user();
 
-            $user = User::where('email_hash', hash('sha256', $googleUser->getEmail()))->first();
+            $email = $googleUser->getEmail();
+            $user = User::where('email_hash', HashService::make($email))->first();
 
             if (!$user) {
 
@@ -90,7 +91,7 @@ class AdminController extends Controller
 
             $user->update([
                 'name' => $googleUser->getName(),
-                'name_hash' => hash('sha256', $googleUser->getName()),
+                'name_hash' => HashService::make($googleUser->getName()),
                 'avatar' => $googleUser->getAvatar(),
             ]);
 
