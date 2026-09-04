@@ -167,7 +167,7 @@ jobs:
             "$PHP" artisan route:clear
             "$PHP" artisan view:clear
             "$PHP" artisan cache:clear
-            "$PHP" artisan artisan queue:retry all
+            "$PHP" artisan queue:retry all
             "$PHP" artisan queue:work --stop-when-empty --tries=3 --timeout=60 --sleep=3
 
             echo "✅ Deployment completed!"
