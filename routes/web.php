@@ -1,0 +1,44 @@
+<?php
+
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\StudentController;
+use App\Models\SocioEconomicCategory;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/form', [StudentController::class, 'form'])->name('studentForm');
+Route::post('/form/store', [StudentController::class, 'store'])->name('storeStudent');
+Route::inertia('/', 'welcome')->name('home');
+// Guest Routes asdasdasd adasdasd asd
+Route::middleware('guest')->group(function () {
+
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+});
+
+Route::get('/check', function () {
+    dd(SocioEconomicCategory::all()->toArray());
+});
+
+Route::get('/auth/google/redirect', [AdminController::class, 'redirect'])->name('googleRedirect');
+Route::get('/auth/google/callback', [AdminController::class, 'callback'])->name('googleCallback');
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard')->middleware(['role:administrator|super_administrator']);
+
+    Route::get('/students', [StudentController::class, 'index'])->name('students')->middleware('permission:view_students');
+
+    Route::patch('/students/{id}/status', [StudentController::class, 'updateStatus'])->name('updateStatus');
+
+    Route::put('/student/{id}/remarks/update', [StudentController::class, 'updateRemarks'])->name('upateRemarks')->middleware('permission:upddate_students');
+
+    Route::middleware(['permission:view_accounts|update_accounts|delete_accounts|create_accounts|view_activity_logs'])->group(function () {
+        Route::get('/accounts', [AccountController::class, 'index'])->name('accounts');
+        Route::post('/account/create', [AccountController::class, 'create'])->name('createAccount');
+        Route::put('/account/{id}/update', [AccountController::class, 'update'])->name('updateAccount');
+
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activityLogs');
+    });
+});
+
+require __DIR__.'/api.php';
