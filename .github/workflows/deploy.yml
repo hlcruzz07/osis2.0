@@ -22,7 +22,7 @@ jobs:
       - name: 🟢 Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - name: 🐘 Install PHP dependencies
         run: composer install --no-dev --optimize-autoloader
 
@@ -54,7 +54,10 @@ jobs:
           script: |
             set -e
             cd public_html/subdomains/osiss2.0
-            PHP=/opt/cpanel/ea-php82/root/usr/bin/php
+            PHP=/opt/cpanel/ea-php83/root/usr/bin/php
+
+            test -x "$PHP"
+            "$PHP" -v
 
             echo "📝 Create .env file"
             cat <<'EOF' > .env
@@ -149,9 +152,8 @@ jobs:
             GOOGLE_DRIVE_BINALBAGAN_FOLDER_ID=${{ secrets.GOOGLE_DRIVE_BINALBAGAN_FOLDER_ID }}
             EOF
 
-            echo "📦 Composer install"
-            # vendor/ is uploaded via SCP; just dump the autoloader
-            composer dump-autoload --no-dev --optimize 2>/dev/null || true
+            echo "📦 Verify uploaded dependencies"
+            test -f vendor/autoload.php
 
             echo "🔗 Storage link"
             $PHP artisan storage:link || true
