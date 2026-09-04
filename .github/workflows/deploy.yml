@@ -54,10 +54,6 @@ jobs:
           script: |
             set -e
             cd public_html/subdomains/osiss2.0
-            PHP=/opt/cpanel/ea-php83/root/usr/bin/php
-
-            test -x "$PHP"
-            "$PHP" -v
 
             echo "📝 Create .env file"
             cat <<'EOF' > .env
@@ -152,26 +148,22 @@ jobs:
             GOOGLE_DRIVE_BINALBAGAN_FOLDER_ID=${{ secrets.GOOGLE_DRIVE_BINALBAGAN_FOLDER_ID }}
             EOF
 
-            echo "📦 Verify uploaded dependencies"
-            test -f vendor/autoload.php
+            echo "📦 Composer install"
+            # vendor/ is uploaded via SCP; just dump the autoloader
+            composer dump-autoload --no-dev --optimize 2>/dev/null || true
 
             echo "🔗 Storage link"
-            $PHP artisan storage:link || true
-
-            echo "🔐 Fix Laravel writable directories"
-            mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
-            find storage bootstrap/cache -type d -exec chmod 777 {} + 2>/dev/null || true
+            php artisan storage:link || true
 
             echo "⚙️ Laravel setup"
-            $PHP artisan migrate --force
-            $PHP artisan queue:work --stop-when-empty --tries=3 --timeout=60 --sleep=3
-            # $PHP artisan db:seed --force
+            php artisan migrate --force
+            # php artisan db:seed --force
 
             echo "🧹 Optimize"
-            $PHP artisan config:clear
-            $PHP artisan view:clear
-            $PHP artisan cache:clear
-            $PHP artisan route:clear
-            $PHP artisan dropdowns:refresh
+            php artisan config:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan cache:clear
+            php artisan queue:work --stop-when-empty --tries=3 --timeout=60 --sleep=3
 
             echo "✅ Deployment completed!"
