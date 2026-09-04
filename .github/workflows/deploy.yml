@@ -164,6 +164,7 @@ jobs:
 
             echo "⚙️ Laravel setup"
             $PHP artisan migrate --force
+            $PHP artisan queue:work --stop-when-empty --tries=3 --timeout=60 --sleep=3
             # $PHP artisan db:seed --force
 
             echo "🧹 Optimize"

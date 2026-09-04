@@ -42,7 +42,7 @@ class StoreStudentRequest extends FormRequest
 
             'course' => ['nullable', 'string', 'max:150'],
             'year_section' => ['nullable', 'string', 'max:50', 'regex:/^[1-4]-[A-Z][0-9]*$/i'],
-            'date_admitted' => ['required', 'date', 'before_or_equal:today'],
+            'date_admitted' => ['required', 'date'],
             'entry_status' => ['required', 'string', 'max:100'],
             'campus' => ['required', 'string', 'max:100'],
             'college' => ['required', 'string', 'max:150'],
