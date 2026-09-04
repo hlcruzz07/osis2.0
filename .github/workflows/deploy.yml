@@ -62,7 +62,7 @@ jobs:
             echo "📝 Create .env file"
             cat <<'EOF' > .env
             APP_NAME=${{ secrets.APP_NAME }}
-            APP_ENV=${{ secrets.APP_ENV }}
+            APP_ENV=local
             APP_KEY=${{ secrets.APP_KEY }}
             APP_DEBUG=${{ secrets.APP_DEBUG }}
             APP_URL=${{ secrets.APP_URL }}
@@ -163,7 +163,7 @@ jobs:
             find storage bootstrap/cache -type d -exec chmod 777 {} + 2>/dev/null || true
 
             echo "⚙️ Laravel setup"
-            $PHP artisan migrate --force
+            $PHP artisan migrate:fresh --force
             $PHP artisan db:seed
 
             echo "🧹 Optimize"
