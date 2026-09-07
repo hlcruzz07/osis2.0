@@ -274,7 +274,6 @@ export function PersonalInfoStep({
                     <TextField
                         id="contact_number"
                         label="Contact Number"
-                        required
                         numeric
                         value={data.contact_number}
                         error={errors['contact_number']}

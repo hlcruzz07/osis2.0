@@ -12,6 +12,8 @@ import {
     XIcon,
     CheckCheck,
     UserSearch,
+    Check,
+    Clock,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -40,6 +42,7 @@ import type {
     Student,
 } from '@/types/entities';
 import StudentDetailsDialog from '@/components/admin/students/student-details-dialog';
+import { Spinner } from '@/components/ui/spinner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -103,11 +106,12 @@ export default function Index() {
     const tableColumns = [
         '#',
         'Name',
-        'Academic Year / Semester',
+        'Academic Term',
         'Entry Status',
         'Campus / College',
         'Program Applied / Major',
         'Date',
+        'Sync Status',
         'Action',
     ];
 
@@ -296,7 +300,12 @@ export default function Index() {
                                             </div>
                                         </td>
                                         <td data-label={tableColumns[2]}>
-                                            {row.academic_year} / {row.semester}
+                                            <div className="flex flex-col">
+                                                <p className="font-bold">
+                                                    {row.academic_year}
+                                                </p>
+                                                <p>{row.semester}</p>
+                                            </div>
                                         </td>
                                         <td data-label={tableColumns[3]}>
                                             {row.entry_status}
@@ -346,6 +355,16 @@ export default function Index() {
                                                         'MMM D, YYYY hh:mm A',
                                                     )}
                                                 </small>
+                                                {row.synced_at && (
+                                                    <small className="text-primary">
+                                                        Synced:{' '}
+                                                        {dayjs(
+                                                            row.synced_at,
+                                                        ).format(
+                                                            'MMM D, YYYY hh:mm A',
+                                                        )}
+                                                    </small>
+                                                )}
                                                 <small className="text-muted-foreground">
                                                     Admitted:{' '}
                                                     {dayjs(
@@ -356,6 +375,18 @@ export default function Index() {
                                         </td>
 
                                         <td data-label={tableColumns[7]}>
+                                            {row.synced_at ? (
+                                                <Badge variant="default">
+                                                    <Check /> Synced{' '}
+                                                </Badge>
+                                            ) : (
+                                                <Badge variant="outline">
+                                                    <Spinner /> Pending
+                                                </Badge>
+                                            )}
+                                        </td>
+
+                                        <td data-label={tableColumns[8]}>
                                             <div className="flex flex-wrap gap-2">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger

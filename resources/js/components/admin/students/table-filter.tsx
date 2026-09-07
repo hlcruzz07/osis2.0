@@ -13,6 +13,7 @@ import {
     SlidersHorizontalIcon,
     Users2,
     XIcon,
+    CloudSync,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { DateRange } from 'react-day-picker';

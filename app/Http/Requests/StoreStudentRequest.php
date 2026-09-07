@@ -28,7 +28,7 @@ class StoreStudentRequest extends FormRequest
             'civil_status' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
             'contact_number' => [
-                'required',
+                'nullable',
                 'starts_with:09',
                 'digits:11',
             ],

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\StudentStatus;
 use App\Http\Requests\StoreStudentRequest;
+use App\Jobs\SyncStudentToLegacyRecordJob;
 use App\Jobs\UploadFileToGoogleDriveJob;
 use App\Models\Student;
 use App\Models\StudentEconomicProof;
 use App\Repositories\StudentRepo;
 use App\Services\HashService;
 use App\Services\ImageCompressionService;
+use App\Services\StudentStoreRecordService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +25,8 @@ class StudentController extends Controller
     public function __construct(
         protected StudentRepo $studentRepo,
         protected ImageCompressionService $imageCompressor,
-    ) {}
+    ) {
+    }
 
     public function index()
     {
@@ -56,7 +59,7 @@ class StudentController extends Controller
 
             $tempDir = storage_path('app/private/temp');
 
-            if (! is_dir($tempDir)) {
+            if (!is_dir($tempDir)) {
                 mkdir($tempDir, 0755, true);
             }
 
@@ -78,10 +81,10 @@ class StudentController extends Controller
 
                 $student->address()->create(array_merge($data['address'], $addressHashes));
 
-                if (! empty($data['scholarships'])) {
+                if (!empty($data['scholarships'])) {
                     $student->scholarships()->createMany(
                         array_map(
-                            fn (string $scholarship) => [
+                            fn(string $scholarship) => [
                                 'name' => $scholarship,
                                 'name_hash' => HashService::make($scholarship),
                             ],
@@ -90,7 +93,7 @@ class StudentController extends Controller
                     );
                 }
 
-                if (! empty($data['socio_economic_profile'])) {
+                if (!empty($data['socio_economic_profile'])) {
                     foreach ($data['socio_economic_profile'] as $profile) {
 
                         $economicProfile = $student->socioEconomicProfile()->create([
@@ -102,10 +105,10 @@ class StudentController extends Controller
                         foreach ($profile['student_economic_proofs'] ?? [] as $proofData) {
                             $proofFile = $proofData['proof'];
 
-                            $proofFilename = Str::random(40).'.'.$proofFile->getClientOriginalExtension();
+                            $proofFilename = Str::random(40) . '.' . $proofFile->getClientOriginalExtension();
                             $proofFile->move($tempDir, $proofFilename);
 
-                            $proofPath = $tempDir.DIRECTORY_SEPARATOR.$proofFilename;
+                            $proofPath = $tempDir . DIRECTORY_SEPARATOR . $proofFilename;
                             $this->imageCompressor->compress($proofPath);
 
                             $economicProof = $economicProfile->economicProofs()->create([
@@ -123,11 +126,25 @@ class StudentController extends Controller
                     }
                 }
 
+                $freshStudent = $student->load(['address', 'socioEconomicProfile']);
+
+                try {
+                    app(StudentStoreRecordService::class)->sync($freshStudent);
+                } catch (\Throwable $e) {
+                    Log::warning('Immediate legacy sync failed, falling back to queued retry', [
+                        'student_id' => $student->id,
+                        'message' => $e->getMessage(),
+                    ]);
+
+                    SyncStudentToLegacyRecordJob::dispatch($student->id);
+                }
+
             });
 
-            if (! empty($uploads)) {
+            if (!empty($uploads)) {
                 UploadFileToGoogleDriveJob::dispatch($uploads, $campus);
             }
+
 
             return redirect()->route('home')->with('success', 'Student Information Submitted Successfully');
         } catch (\Throwable $th) {
@@ -146,18 +163,26 @@ class StudentController extends Controller
         $month = $now->month;
         $year = $now->year;
 
-        if ($month >= 6) {
-            // June - December: 1st Semester
+        // August to December: Active 1st Semester
+        if ($month >= 8 && $month <= 12) {
             $startYear = $year;
             $semester = '1st Semester';
-        } else {
-            // January - May: 2nd Semester (belongs to previous year's start)
+        }
+        // January to May: Active 2nd Semester
+        elseif ($month >= 1 && $month <= 5) {
             $startYear = $year - 1;
             $semester = '2nd Semester';
         }
+        // June and July: Official intervening Summer Term (belongs to previous AY)
+        else {
+            $startYear = $year - 1;
+            $semester = 'Summer Term';
+            // Note: If your database ONLY supports 1st and 2nd sem, 
+            // you can map this to '2nd Semester' or change the July boundary to '1st Semester'
+        }
 
         return [
-            'academic_year' => $startYear.'-'.($startYear + 1),
+            'academic_year' => $startYear . '-' . ($startYear + 1),
             'semester' => $semester,
         ];
     }
@@ -170,7 +195,7 @@ class StudentController extends Controller
 
         $student = $this->studentRepo->find($id);
 
-        if (! $student) {
+        if (!$student) {
             return response()->json([
                 'message' => 'Student not found.',
             ], 404);
@@ -188,31 +213,18 @@ class StudentController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function syncAll()
     {
-        //
-    }
+        $count = Student::whereNull('synced_at')->count();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        Student::whereNull('synced_at')
+            ->select('id')
+            ->chunkById(100, function ($students) {
+                foreach ($students as $student) {
+                    SyncStudentToLegacyRecordJob::dispatch($student->id);
+                }
+            });
 
-    /**
-     * Update the specified resource in storage.
-     */
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', "Queued {$count} student(s) for data syncing.");
     }
 }

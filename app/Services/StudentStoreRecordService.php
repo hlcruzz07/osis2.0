@@ -20,20 +20,29 @@ class StudentStoreRecordService
 
     /**
      * Sync a student's data into the legacy per-campus "record" table.
+     * Idempotent: safe to call repeatedly for the same student (job retries,
+     * duplicate dispatches) because it upserts on email instead of blind-inserting.
      *
-     * @return bool True if the insert happened, false if the campus has no mapped connection.
+     * @return bool True if the sync happened, false if the campus has no mapped connection.
      */
     public function sync(Student $student): bool
     {
         $connection = $this->resolveConnection($student->campus);
 
-        if (! $connection) {
+        if (!$connection) {
             return false;
         }
 
+        $payload = $this->buildRecordPayload($student);
+
         DB::connection($connection)
             ->table('record')
-            ->insert($this->buildRecordPayload($student));
+            ->updateOrInsert(
+                ['email' => $payload['email']],
+                $payload
+            );
+
+        $student->forceFill(['synced_at' => now()])->save();
 
         return true;
     }
@@ -46,12 +55,10 @@ class StudentStoreRecordService
     protected function buildRecordPayload(Student $student): array
     {
         $isFirstGen = $student->socioEconomicProfile
-            ->where('socio_economic_category_id', 11)
-            ->exists();
+            ->contains('socio_economic_category_id', 11);
 
         $isIpOrIcc = $student->socioEconomicProfile
-            ->where('socio_economic_category_id', 5)
-            ->exists();
+            ->contains('socio_economic_category_id', 5);
 
         $isBinalbagan = $student->campus === 'BINALBAGAN';
 
@@ -64,25 +71,23 @@ class StudentStoreRecordService
             'extension' => strtoupper($student->suffix ?? ''),
             'birthdate' => $student->birthdate,
             'gender' => $student->gender,
-            'birthplace' => $student->birthplace,
+            'birthplace' => $student->birthplace ?? '',
             'street' => $student->address->street,
-            'barangay' => 'Brgy. '.$student->address->barangay,
+            'barangay' => 'Brgy. ' . $student->address->barangay,
             'city' => $student->address->city,
             'zip_code' => $student->address->zip_code,
             'civilstatus' => $student->civil_status,
-            'contact_number' => $student->mobile_num ? '0'.$student->mobile_num : '',
-
-            'mother_lastname' => $student->m_lname,
-            'mother_firstname' => $student->m_fname,
+            'contact_number' => $student->contact_number,
+            'mother_lastname' => $student->m_lname ?? '',
+            'mother_firstname' => $student->m_fname ?? '',
             'mother_middlename' => $student->m_mname ?? '',
             'mother_occupation' => $student->m_occupation ?? '',
-            'mother_highest_educational_attainment' => $student->m_highest_education,
-
-            'father_lastname' => $student->f_lname,
-            'father_firstname' => $student->f_fname,
+            'mother_highest_educational_attainment' => $student->m_highest_education ?? '',
+            'father_lastname' => $student->f_lname ?? '',
+            'father_firstname' => $student->f_fname ?? '',
             'father_middlename' => $student->f_mname ?? '',
             'father_occupation' => $student->f_occupation ?? '',
-            'father_highest_educational_attainment' => $student->f_highest_education,
+            'father_highest_educational_attainment' => $student->f_highest_education ?? '',
 
             'year_admitted' => date('d/m/Y', strtotime($student->date_admitted)),
             'semester' => $student->semester === '1st Semester' ? 'First Semester' : 'Second Semester',

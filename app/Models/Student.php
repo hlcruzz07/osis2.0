@@ -67,6 +67,7 @@ class Student extends Model
         'c_year',
         'c_type',
         'status',
+        'synced_at',
     ];
 
     protected $casts = [
@@ -125,7 +126,7 @@ class Student extends Model
     {
         return array_merge(
             $this->hidden,
-            array_map(fn ($f) => "{$f}_hash", $this->hashable)
+            array_map(fn($f) => "{$f}_hash", $this->hashable)
         );
     }
 
@@ -134,9 +135,9 @@ class Student extends Model
     public function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn () => trim(implode(' ', array_filter([
+            get: fn() => trim(implode(' ', array_filter([
                 $this->fname,
-                $this->mname ? mb_strtoupper(mb_substr($this->mname, 0, 1)).'.' : null,
+                $this->mname ? mb_strtoupper(mb_substr($this->mname, 0, 1)) . '.' : null,
                 $this->lname,
                 $this->suffix ?: null,
             ])))
@@ -146,7 +147,7 @@ class Student extends Model
     public function fullAddress(): Attribute
     {
         return Attribute::make(
-            get: fn () => trim(implode(', ', array_filter([
+            get: fn() => trim(implode(', ', array_filter([
                 $this->address?->street,
                 $this->address?->barangay,
                 $this->address?->city,
@@ -159,7 +160,7 @@ class Student extends Model
     public function courseYearSection(): Attribute
     {
         return Attribute::make(
-            get: fn () => trim(implode(' ', array_filter([
+            get: fn() => trim(implode(' ', array_filter([
                 $this->course,
                 $this->year_section,
             ])))
