@@ -40,7 +40,9 @@ export function EducationalBackgroundStep({
                         value={data.shs_name ?? ''}
                         error={errors['shs_name']}
                         placeholder="Enter School Name"
-                        onChange={(value) => setData('shs_name', value)}
+                        onChange={(value) =>
+                            setData('shs_name', capitalizeString(value))
+                        }
                     />
                     <div className="flex items-end">
                         <SelectField
@@ -105,7 +107,9 @@ export function EducationalBackgroundStep({
                         value={data.c_name ?? ''}
                         error={errors['c_name']}
                         placeholder="Enter School Name"
-                        onChange={(value) => setData('c_name', value)}
+                        onChange={(value) =>
+                            setData('c_name', capitalizeString(value))
+                        }
                     />
 
                     <div className="flex items-end">

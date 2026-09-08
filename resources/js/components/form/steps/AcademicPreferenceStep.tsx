@@ -6,6 +6,7 @@ import { SelectField } from '@/components/form/SelectField';
 import { TextField } from '@/components/form/TextField';
 
 import { Button } from '@/components/ui/button';
+import { capitalizeString } from '@/lib/utils';
 import type {
     ResetStudentFormData,
     SetStudentFormData,
@@ -81,7 +82,10 @@ export function AcademicPreferencesStep({
                         value={data.year_section}
                         error={errors['year_section']}
                         placeholder="e.g. 1-B, 3-A1, etc."
-                        onChange={(value) => setData('year_section', value)}
+                        maxLength={8}
+                        onChange={(value) =>
+                            setData('year_section', value.toUpperCase())
+                        }
                     />
                 </FormGrid>
             </FormSection>

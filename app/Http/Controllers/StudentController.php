@@ -163,22 +163,15 @@ class StudentController extends Controller
         $month = $now->month;
         $year = $now->year;
 
-        // August to December: Active 1st Semester
+        // August to December: Active 1st Semester of the current year
         if ($month >= 8 && $month <= 12) {
             $startYear = $year;
             $semester = '1st Semester';
         }
-        // January to May: Active 2nd Semester
-        elseif ($month >= 1 && $month <= 5) {
-            $startYear = $year - 1;
-            $semester = '2nd Semester';
-        }
-        // June and July: Official intervening Summer Term (belongs to previous AY)
+        // January to July: Active 2nd Semester (Jan-May) + Summer gap (June-July) mapped to 2nd Sem
         else {
             $startYear = $year - 1;
-            $semester = 'Summer Term';
-            // Note: If your database ONLY supports 1st and 2nd sem, 
-            // you can map this to '2nd Semester' or change the July boundary to '1st Semester'
+            $semester = '2nd Semester';
         }
 
         return [

@@ -130,9 +130,9 @@ export function SocioEconomicCheckboxField({
                         {category.name}
                     </FieldLabel>
 
-                    {category.desc && (
+                    {category.description && (
                         <p className="text-sm text-muted-foreground">
-                            {category.desc}
+                            {category.description}
                         </p>
                     )}
                 </div>

@@ -4,6 +4,7 @@ import { FormSection } from '@/components/form/FormSection';
 import { SelectField } from '@/components/form/SelectField';
 import { TextField } from '@/components/form/TextField';
 import { Button } from '@/components/ui/button';
+import { capitalizeString } from '@/lib/utils';
 import type { StudentForm } from '@/types/form';
 
 type FamilyBackgroundStepProps = {
@@ -90,7 +91,9 @@ export function FamilyBackgroundStep({
                         placeholder={`Enter ${role === 'f' ? 'Father' : role === 'm' ? 'Mother' : 'Spouse'} Occupation`}
                         error={errors[occupationKey]}
                         maxLength={50}
-                        onChange={(value) => setData(occupationKey, value)}
+                        onChange={(value) =>
+                            setData(occupationKey, capitalizeString(value))
+                        }
                     />
 
                     <div className="flex items-end">

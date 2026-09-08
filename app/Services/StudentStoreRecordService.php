@@ -71,7 +71,7 @@ class StudentStoreRecordService
             'extension' => strtoupper($student->suffix ?? ''),
             'birthdate' => $student->birthdate,
             'gender' => $student->gender,
-            'birthplace' => $student->birthplace ?? '',
+            'birthplace' => $student->birthplace,
             'street' => $student->address->street,
             'barangay' => 'Brgy. ' . $student->address->barangay,
             'city' => $student->address->city,
@@ -88,23 +88,28 @@ class StudentStoreRecordService
             'father_middlename' => $student->f_mname ?? '',
             'father_occupation' => $student->f_occupation ?? '',
             'father_highest_educational_attainment' => $student->f_highest_education ?? '',
-
             'year_admitted' => date('d/m/Y', strtotime($student->date_admitted)),
             'semester' => $student->semester === '1st Semester' ? 'First Semester' : 'Second Semester',
             'year' => $student->academic_year,
             'curriculum' => 'N/A',
             'lrn_no' => $student->lrn ?? '',
-
+            'e_name_of_school' => '',
+            'e_address_of_school' => '',
+            'e_school_year_attended' => '',
+            's_name_of_school' => '',
+            's_address_of_school' => '',
+            's_school_year_attended' => '',
             'shs_name_of_school' => $student->shs_name ?? '',
             'shs_address_of_school' => $student->shs_address ?? '',
             'shs_school_year_attended' => $student->shs_year ?? '',
             'shs_school_type' => $student->shs_type ?? '',
-
             'c_name_of_school' => $student->c_name ?? '',
             'c_address_of_school' => $student->c_address ?? '',
             'c_school_year_attended' => $student->c_year ?? '',
+            'g_name_of_school' => '',
+            'g_address_of_school' => '',
+            'g_school_year_attended' => '',
             'college_school_type' => $student->c_type ?? '',
-
             'first_gen_student' => $isFirstGen ? '1' : '0',
             'ip_or_icc' => $isIpOrIcc
                 ? ($isBinalbagan ? 'true' : '1')

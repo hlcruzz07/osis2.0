@@ -13,7 +13,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { updateRemarks } from '@/routes';
+import { upateRemarks } from '@/routes';
 import type { Student } from '@/types/entities';
 import { Field, FieldError, FieldLabel } from '../../ui/field';
 // import { updateStudentRemarks } from '@/routes'; // adjust to your actual route helper
@@ -48,7 +48,7 @@ export default function StudentRemarksDialog({
             return;
         }
 
-        put(updateRemarks(student.id!).url, {
+        put(upateRemarks(student.id!).url, {
             preserveScroll: true,
             onSuccess: () => {
                 setOpen(false);
@@ -95,7 +95,7 @@ export default function StudentRemarksDialog({
                                                 variant="outline"
                                                 className="font-normal"
                                             >
-                                                {student.id_number}
+                                                {student.id}
                                             </Badge>
                                         </>
                                     ) : (

@@ -7,7 +7,6 @@ import {
     GraduationCap,
     ShieldCheck,
     IdCard,
-    MessageSquareText,
     ZoomIn,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -222,9 +221,9 @@ export default function StudentDetailsDialog({
             .join(', ') ||
             null);
 
-    const contactNumber = student.phone ?? student.contact_number ?? null;
-    const birthDate = student.date_of_birth ?? student.birthdate ?? null;
-    const placeOfBirth = student.place_of_birth ?? student.birthplace ?? null;
+    const contactNumber = student.contact_number ?? null;
+    const birthDate = student.birthdate ?? null;
+    const placeOfBirth = student.birthplace ?? null;
 
     const father = {
         name: formatName(student.f_fname, student.f_mname, student.f_lname),
@@ -265,7 +264,7 @@ export default function StudentDetailsDialog({
                                 {displayName}
                             </DialogTitle>
                             <DialogDescription className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs sm:text-sm">
-                                <span>{student.id_number ?? student.id}</span>
+                                <span>{student.id}</span>
                                 {courseYearSection && (
                                     <>
                                         <span className="opacity-50">•</span>
@@ -381,10 +380,6 @@ export default function StudentDetailsDialog({
                                             value={placeOfBirth}
                                         />
                                         <Field
-                                            label="Nationality"
-                                            value={student.nationality}
-                                        />
-                                        <Field
                                             label="Semester"
                                             value={student.semester}
                                         />
@@ -440,61 +435,12 @@ export default function StudentDetailsDialog({
                                         />
                                     </div>
                                 </SectionCard>
-
-                                {student.remarks && (
-                                    <SectionCard title="Counselor Remarks">
-                                        <div className="flex gap-3">
-                                            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
-                                                <MessageSquareText className="size-4" />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <div className="flex items-start justify-between gap-x-2 gap-y-0.5">
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-foreground">
-                                                            {student.counselor
-                                                                ?.name ??
-                                                                'Unknown counselor'}
-                                                        </p>
-                                                        <small>
-                                                            {
-                                                                student
-                                                                    .counselor
-                                                                    ?.email
-                                                            }
-                                                        </small>
-                                                    </div>
-                                                    {student.remarked_at && (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {dayjs(
-                                                                student.remarked_at,
-                                                            ).format(
-                                                                'MMM D, YYYY [at] h:mm A',
-                                                            )}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className="mt-2 rounded-lg rounded-tl-none border bg-amber-50 px-3 py-2.5 text-sm text-foreground dark:border-amber-900 dark:bg-amber-950/20">
-                                                    {student.remarks}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </SectionCard>
-                                )}
                             </TabsContent>
 
                             <TabsContent
                                 value="family"
                                 className="m-0 space-y-4 p-4 sm:p-6"
                             >
-                                <SectionCard title="Parents' Marital Relationship">
-                                    <Field
-                                        label="Status"
-                                        value={
-                                            student.parent_marital_relationship
-                                        }
-                                    />
-                                </SectionCard>
-
                                 {familyMembers.length > 0 ? (
                                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                                         {familyMembers.map((member, index) => (
@@ -668,7 +614,6 @@ export default function StudentDetailsDialog({
                                             (profile, index) => {
                                                 const proofEntries =
                                                     profile.economic_proofs ??
-                                                    profile.student_economic_proofs ??
                                                     [];
                                                 const title =
                                                     profile

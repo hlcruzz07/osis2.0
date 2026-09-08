@@ -1,4 +1,5 @@
 import type {
+    Address,
     Student,
     StudentEconomicProof,
     StudentSocioEconomicProfile,
@@ -21,12 +22,21 @@ export interface StudentSocioEconomicProfileForm extends Omit<
 export type StudentForm = Omit<
     Student,
     | 'id'
+    | 'semester'
+    | 'academic_year'
     | 'created_at'
     | 'updated_at'
     | 'status'
     | 'socio_economic_profile'
     | 'scholarships'
+    | 'address'
 > & {
+    semester?: string;
+    academic_year?: string;
+    year_section: string;
+    birthplace: string;
+    contact_number: string;
+    address: Address;
     socio_economic_profile?: StudentSocioEconomicProfileForm[];
     scholarships?: string[];
     agree_accuracy: boolean;

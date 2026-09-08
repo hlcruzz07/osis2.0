@@ -28,7 +28,11 @@ class StudentRepo
         $hashes = HashService::forFields($studentData, $this->model->hashable);
 
         return $this->model->updateOrCreate(
-            ['email_hash' => HashService::make($studentData['email'] ?? null)],
+            [
+                'email_hash' => HashService::make($studentData['email']),
+                'academic_year_hash' => HashService::make($studentData['academic_year']),
+                'semester_hash' => HashService::make($studentData['semester']),
+            ],
             array_merge($studentData, $hashes)
         );
     }

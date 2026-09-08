@@ -22,7 +22,7 @@ class StoreStudentRequest extends FormRequest
             'lname' => ['required', 'string', 'max:100'],
             'suffix' => ['nullable', 'string', 'max:30'],
             'birthdate' => ['required', 'date', 'before:today'],
-            'birthplace' => ['nullable', 'string', 'max:100'],
+            'birthplace' => ['required', 'string', 'max:100'],
             'gender' => ['required', 'string', 'max:50'],
             'sexual_orientation' => ['required', 'string', 'max:50'],
             'civil_status' => ['required', 'string', 'max:50'],

@@ -123,6 +123,7 @@ export function PersonalInfoStep({
                         value={data.birthplace}
                         error={errors.birthplace}
                         placeholder="Enter Birthplace"
+                        required
                         maxLength={50}
                         uppercase
                         onChange={(value) =>
