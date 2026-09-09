@@ -62,7 +62,7 @@ jobs:
             echo "📝 Create .env file"
             cat <<'EOF' > .env
             APP_NAME=${{ secrets.APP_NAME }}
-            APP_ENV=local
+            APP_ENV=${{ secrets.APP_ENV }}
             APP_KEY=${{ secrets.APP_KEY }}
             APP_DEBUG=${{ secrets.APP_DEBUG }}
             APP_URL=${{ secrets.APP_URL }}
@@ -159,8 +159,8 @@ jobs:
             "$PHP" artisan storage:link || true
 
             echo "⚙️ Laravel setup"
-            "$PHP" artisan migrate:fresh --force
-            "$PHP" artisan db:seed --force
+            "$PHP" artisan migrate --force
+            "$PHP" artisan dropdowns:refresh
 
             echo "🧹 Optimize"
             "$PHP" artisan config:clear  
